@@ -23,8 +23,8 @@ namespace Web
                       "~/Scripts/bootstrap.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap-Minty.min.css",
-                      "~/Content/site.css"));
+                      "~/Content/bootstrap-Minty.min.css"
+                      /*"~/Content/site.css"*/));
         }
     }
 }
