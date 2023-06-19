@@ -10,6 +10,8 @@ namespace Infraestructure.Repository
     public interface IRepositoryProducto
     {
         IEnumerable<Producto> GetProducts();
+        IEnumerable<Producto> GetByVendedor(int idVendedor);
         Producto GetProductoByID(int id);
+        //IEnumerable<Producto> GetProductoByEstado(int idEstado);
     }
 }

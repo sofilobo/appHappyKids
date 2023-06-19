@@ -15,10 +15,10 @@ namespace Infraestructure.Models
     public partial class Evaluacion
     {
         public int IdEvaluacion { get; set; }
-        public Nullable<int> IdUsuario { get; set; }
-        public Nullable<int> Evaluacion1 { get; set; }
+        public Nullable<int> IdCompra { get; set; }
+        public Nullable<int> Puntuacion { get; set; }
         public string Comentario { get; set; }
     
-        public virtual Usuario Usuario { get; set; }
+        public virtual EncabezadoCompra EncabezadoCompra { get; set; }
     }
 }

@@ -21,6 +21,19 @@ namespace Application_Core.Services
             IRepositoryProducto repository = new RepositoryProducto();
             return repository.GetProducts();
         }
+
+        public IEnumerable<Producto> GetByVendedor(int idVendedor)
+        {
+            IRepositoryProducto repository = new RepositoryProducto();
+            return repository.GetByVendedor(idVendedor);
+        }
+        
+
+        //public IEnumerable<Producto> GetProductoByEstado(int idEstado)
+        //{
+        //    IRepositoryProducto repository = new RepositoryProducto();
+        //    return repository.GetProductoByEstado(idEstado);
+        //}
     }
 }
 

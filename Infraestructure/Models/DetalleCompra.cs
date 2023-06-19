@@ -18,8 +18,10 @@ namespace Infraestructure.Models
         public Nullable<int> IdProducto { get; set; }
         public Nullable<int> Cantidad { get; set; }
         public Nullable<int> IdCompra { get; set; }
+        public Nullable<int> IdEstado { get; set; }
     
         public virtual EncabezadoCompra EncabezadoCompra { get; set; }
+        public virtual EstadoEntrega EstadoEntrega { get; set; }
         public virtual Producto Producto { get; set; }
     }
 }

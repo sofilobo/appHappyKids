@@ -18,6 +18,7 @@ namespace Infraestructure.Models
         public EncabezadoCompra()
         {
             this.DetalleCompra = new HashSet<DetalleCompra>();
+            this.Evaluacion = new HashSet<Evaluacion>();
         }
     
         public int IdCompra { get; set; }
@@ -36,5 +37,7 @@ namespace Infraestructure.Models
         public virtual EstadoCompra EstadoCompra { get; set; }
         public virtual MetodoPago MetodoPago { get; set; }
         public virtual Usuario Usuario { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Evaluacion> Evaluacion { get; set; }
     }
 }

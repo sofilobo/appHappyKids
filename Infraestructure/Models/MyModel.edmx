@@ -30,6 +30,7 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <Property Name="IdProducto" Type="int" />
           <Property Name="Cantidad" Type="int" />
           <Property Name="IdCompra" Type="int" />
+          <Property Name="IdEstado" Type="int" />
         </EntityType>
         <EntityType Name="Direccion">
           <Key>
@@ -65,6 +66,13 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <Property Name="IdEstado" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Descripcion" Type="nvarchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="EstadoEntrega">
+          <Key>
+            <PropertyRef Name="IdEstado" />
+          </Key>
+          <Property Name="IdEstado" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Descripcion" Type="nvarchar" MaxLength="100" />
+        </EntityType>
         <EntityType Name="EstadoProducto">
           <Key>
             <PropertyRef Name="IdEstado" />
@@ -77,8 +85,8 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             <PropertyRef Name="IdEvaluacion" />
           </Key>
           <Property Name="IdEvaluacion" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="IdUsuario" Type="int" />
-          <Property Name="Evaluacion" Type="int" />
+          <Property Name="IdCompra" Type="int" />
+          <Property Name="Puntuacion" Type="int" />
           <Property Name="Comentario" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="ImagenProducto">
@@ -87,7 +95,7 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           </Key>
           <Property Name="IdImagen" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="IdProducto" Type="int" />
-          <Property Name="Imagen" Type="bit" />
+          <Property Name="Imagen" Type="varbinary(max)" />
         </EntityType>
         <EntityType Name="MetodoPago">
           <Key>
@@ -118,6 +126,7 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <Property Name="IdEstado" Type="int" />
           <Property Name="IdVendedor" Type="int" />
           <Property Name="Descripcion" Type="nvarchar" MaxLength="200" />
+          <Property Name="Cantidad" Type="int" />
         </EntityType>
         <EntityType Name="Respuesta">
           <Key>
@@ -134,14 +143,12 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <Property Name="IdRol" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Descripcion" Type="nvarchar" MaxLength="50" />
         </EntityType>
-        <EntityType Name="Stock">
-          <Key>
-            <PropertyRef Name="IdStock" />
-          </Key>
-          <Property Name="IdStock" Type="int" Nullable="false" />
-          <Property Name="IdProducto" Type="int" />
-          <Property Name="Cantidad" Type="int" />
-        </EntityType>
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'HappyKids.dbo.RolUsuario' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="RolUsuario">
+          <Property Name="IdRol" Type="int" />
+          <Property Name="IdUsuario" Type="int" />
+        </EntityType>-->
         <EntityType Name="TipoTarjeta">
           <Key>
             <PropertyRef Name="IdTipoTarjeta" />
@@ -161,7 +168,6 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <Property Name="Telefono" Type="nvarchar" MaxLength="50" />
           <Property Name="Correo" Type="nvarchar" MaxLength="100" />
           <Property Name="Contrasenna" Type="nvarchar" MaxLength="50" />
-          <Property Name="IdRol" Type="int" />
         </EntityType>
         <Association Name="FK_CategoriaProducto_Categoria">
           <End Role="Categoria" Type="Self.Categoria" Multiplicity="1" />
@@ -199,6 +205,18 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_DetalleCompra_EstadoEntrega">
+          <End Role="EstadoEntrega" Type="Self.EstadoEntrega" Multiplicity="0..1" />
+          <End Role="DetalleCompra" Type="Self.DetalleCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EstadoEntrega">
+              <PropertyRef Name="IdEstado" />
+            </Principal>
+            <Dependent Role="DetalleCompra">
+              <PropertyRef Name="IdEstado" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_DetalleCompra_Producto">
           <End Role="Producto" Type="Self.Producto" Multiplicity="0..1" />
           <End Role="DetalleCompra" Type="Self.DetalleCompra" Multiplicity="*" />
@@ -271,15 +289,15 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Evaluacion_Usuario">
-          <End Role="Usuario" Type="Self.Usuario" Multiplicity="0..1" />
+        <Association Name="FK_Evaluacion_EncabezadoCompra">
+          <End Role="EncabezadoCompra" Type="Self.EncabezadoCompra" Multiplicity="0..1" />
           <End Role="Evaluacion" Type="Self.Evaluacion" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Usuario">
-              <PropertyRef Name="IdUsuario" />
+            <Principal Role="EncabezadoCompra">
+              <PropertyRef Name="IdCompra" />
             </Principal>
             <Dependent Role="Evaluacion">
-              <PropertyRef Name="IdUsuario" />
+              <PropertyRef Name="IdCompra" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -367,36 +385,19 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Stock_Producto">
-          <End Role="Producto" Type="Self.Producto" Multiplicity="0..1" />
-          <End Role="Stock" Type="Self.Stock" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Producto">
-              <PropertyRef Name="IdProducto" />
-            </Principal>
-            <Dependent Role="Stock">
-              <PropertyRef Name="IdProducto" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Usuario_Rol">
-          <End Role="Rol" Type="Self.Rol" Multiplicity="0..1" />
-          <End Role="Usuario" Type="Self.Usuario" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Rol">
-              <PropertyRef Name="IdRol" />
-            </Principal>
-            <Dependent Role="Usuario">
-              <PropertyRef Name="IdRol" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
+        <!--Errors Found During Generation:
+error 6004: The table 'HappyKids.dbo.RolUsuario' is referenced by a relationship, but cannot be found.
+        <Association Name="FK_RolUsuario_Rol" />-->
+        <!--Errors Found During Generation:
+error 6004: The table 'HappyKids.dbo.RolUsuario' is referenced by a relationship, but cannot be found.
+        <Association Name="FK_RolUsuario_Usuario" />-->
         <EntityContainer Name="HappyKidsModelStoreContainer">
           <EntitySet Name="Categoria" EntityType="Self.Categoria" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DetalleCompra" EntityType="Self.DetalleCompra" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Direccion" EntityType="Self.Direccion" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EncabezadoCompra" EntityType="Self.EncabezadoCompra" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EstadoCompra" EntityType="Self.EstadoCompra" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EstadoEntrega" EntityType="Self.EstadoEntrega" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EstadoProducto" EntityType="Self.EstadoProducto" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Evaluacion" EntityType="Self.Evaluacion" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ImagenProducto" EntityType="Self.ImagenProducto" Schema="dbo" store:Type="Tables" />
@@ -405,7 +406,6 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <EntitySet Name="Producto" EntityType="Self.Producto" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Respuesta" EntityType="Self.Respuesta" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Rol" EntityType="Self.Rol" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Stock" EntityType="Self.Stock" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TipoTarjeta" EntityType="Self.TipoTarjeta" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Usuario" EntityType="Self.Usuario" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CategoriaProducto" EntityType="Self.CategoriaProducto" store:Type="Tables" store:Schema="dbo">
@@ -424,6 +424,10 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           </AssociationSet>
           <AssociationSet Name="FK_DetalleCompra_EncabezadoCompra" Association="Self.FK_DetalleCompra_EncabezadoCompra">
             <End Role="EncabezadoCompra" EntitySet="EncabezadoCompra" />
+            <End Role="DetalleCompra" EntitySet="DetalleCompra" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DetalleCompra_EstadoEntrega" Association="Self.FK_DetalleCompra_EstadoEntrega">
+            <End Role="EstadoEntrega" EntitySet="EstadoEntrega" />
             <End Role="DetalleCompra" EntitySet="DetalleCompra" />
           </AssociationSet>
           <AssociationSet Name="FK_DetalleCompra_Producto" Association="Self.FK_DetalleCompra_Producto">
@@ -450,8 +454,8 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             <End Role="Usuario" EntitySet="Usuario" />
             <End Role="EncabezadoCompra" EntitySet="EncabezadoCompra" />
           </AssociationSet>
-          <AssociationSet Name="FK_Evaluacion_Usuario" Association="Self.FK_Evaluacion_Usuario">
-            <End Role="Usuario" EntitySet="Usuario" />
+          <AssociationSet Name="FK_Evaluacion_EncabezadoCompra" Association="Self.FK_Evaluacion_EncabezadoCompra">
+            <End Role="EncabezadoCompra" EntitySet="EncabezadoCompra" />
             <End Role="Evaluacion" EntitySet="Evaluacion" />
           </AssociationSet>
           <AssociationSet Name="FK_ImagenProducto_Producto" Association="Self.FK_ImagenProducto_Producto">
@@ -482,14 +486,6 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             <End Role="Pregunta" EntitySet="Pregunta" />
             <End Role="Respuesta" EntitySet="Respuesta" />
           </AssociationSet>
-          <AssociationSet Name="FK_Stock_Producto" Association="Self.FK_Stock_Producto">
-            <End Role="Producto" EntitySet="Producto" />
-            <End Role="Stock" EntitySet="Stock" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Usuario_Rol" Association="Self.FK_Usuario_Rol">
-            <End Role="Rol" EntitySet="Rol" />
-            <End Role="Usuario" EntitySet="Usuario" />
-          </AssociationSet>
         </EntityContainer>
       </Schema>
     </edmx:StorageModels>
@@ -512,7 +508,9 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <Property Name="IdProducto" Type="Int32" />
           <Property Name="Cantidad" Type="Int32" />
           <Property Name="IdCompra" Type="Int32" />
+          <Property Name="IdEstado" Type="Int32" />
           <NavigationProperty Name="EncabezadoCompra" Relationship="Self.FK_DetalleCompra_EncabezadoCompra" FromRole="DetalleCompra" ToRole="EncabezadoCompra" />
+          <NavigationProperty Name="EstadoEntrega" Relationship="Self.FK_DetalleCompra_EstadoEntrega" FromRole="DetalleCompra" ToRole="EstadoEntrega" />
           <NavigationProperty Name="Producto" Relationship="Self.FK_DetalleCompra_Producto" FromRole="DetalleCompra" ToRole="Producto" />
         </EntityType>
         <EntityType Name="Direccion">
@@ -548,6 +546,7 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <NavigationProperty Name="EstadoCompra" Relationship="Self.FK_EncabezadoCompra_EstadoCompra" FromRole="EncabezadoCompra" ToRole="EstadoCompra" />
           <NavigationProperty Name="MetodoPago" Relationship="Self.FK_EncabezadoCompra_MetodoPago" FromRole="EncabezadoCompra" ToRole="MetodoPago" />
           <NavigationProperty Name="Usuario" Relationship="Self.FK_EncabezadoCompra_Usuario" FromRole="EncabezadoCompra" ToRole="Usuario" />
+          <NavigationProperty Name="Evaluacion" Relationship="Self.FK_Evaluacion_EncabezadoCompra" FromRole="EncabezadoCompra" ToRole="Evaluacion" />
         </EntityType>
         <EntityType Name="EstadoCompra">
           <Key>
@@ -556,6 +555,14 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <Property Name="IdEstado" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Descripcion" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="EncabezadoCompra" Relationship="Self.FK_EncabezadoCompra_EstadoCompra" FromRole="EstadoCompra" ToRole="EncabezadoCompra" />
+        </EntityType>
+        <EntityType Name="EstadoEntrega">
+          <Key>
+            <PropertyRef Name="IdEstado" />
+          </Key>
+          <Property Name="IdEstado" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Descripcion" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="DetalleCompra" Relationship="Self.FK_DetalleCompra_EstadoEntrega" FromRole="EstadoEntrega" ToRole="DetalleCompra" />
         </EntityType>
         <EntityType Name="EstadoProducto">
           <Key>
@@ -570,10 +577,10 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             <PropertyRef Name="IdEvaluacion" />
           </Key>
           <Property Name="IdEvaluacion" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="IdUsuario" Type="Int32" />
-          <Property Name="Evaluacion1" Type="Int32" />
+          <Property Name="IdCompra" Type="Int32" />
+          <Property Name="Puntuacion" Type="Int32" />
           <Property Name="Comentario" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Usuario" Relationship="Self.FK_Evaluacion_Usuario" FromRole="Evaluacion" ToRole="Usuario" />
+          <NavigationProperty Name="EncabezadoCompra" Relationship="Self.FK_Evaluacion_EncabezadoCompra" FromRole="Evaluacion" ToRole="EncabezadoCompra" />
         </EntityType>
         <EntityType Name="ImagenProducto">
           <Key>
@@ -581,7 +588,7 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           </Key>
           <Property Name="IdImagen" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="IdProducto" Type="Int32" />
-          <Property Name="Imagen" Type="Boolean" />
+          <Property Name="Imagen" Type="Binary" MaxLength="Max" FixedLength="false" />
           <NavigationProperty Name="Producto" Relationship="Self.FK_ImagenProducto_Producto" FromRole="ImagenProducto" ToRole="Producto" />
         </EntityType>
         <EntityType Name="MetodoPago">
@@ -618,12 +625,12 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <Property Name="IdEstado" Type="Int32" />
           <Property Name="IdVendedor" Type="Int32" />
           <Property Name="Descripcion" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Cantidad" Type="Int32" />
           <NavigationProperty Name="DetalleCompra" Relationship="Self.FK_DetalleCompra_Producto" FromRole="Producto" ToRole="DetalleCompra" />
           <NavigationProperty Name="EstadoProducto" Relationship="Self.FK_Producto_EstadoProducto" FromRole="Producto" ToRole="EstadoProducto" />
           <NavigationProperty Name="ImagenProducto" Relationship="Self.FK_ImagenProducto_Producto" FromRole="Producto" ToRole="ImagenProducto" />
           <NavigationProperty Name="Pregunta" Relationship="Self.FK_Pregunta_Producto" FromRole="Producto" ToRole="Pregunta" />
           <NavigationProperty Name="Usuario" Relationship="Self.FK_Producto_Usuario" FromRole="Producto" ToRole="Usuario" />
-          <NavigationProperty Name="Stock" Relationship="Self.FK_Stock_Producto" FromRole="Producto" ToRole="Stock" />
           <NavigationProperty Name="Categoria" Relationship="Self.CategoriaProducto" FromRole="Producto" ToRole="Categoria" />
         </EntityType>
         <EntityType Name="Respuesta">
@@ -641,16 +648,6 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           </Key>
           <Property Name="IdRol" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Descripcion" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Usuario" Relationship="Self.FK_Usuario_Rol" FromRole="Rol" ToRole="Usuario" />
-        </EntityType>
-        <EntityType Name="Stock">
-          <Key>
-            <PropertyRef Name="IdStock" />
-          </Key>
-          <Property Name="IdStock" Type="Int32" Nullable="false" />
-          <Property Name="IdProducto" Type="Int32" />
-          <Property Name="Cantidad" Type="Int32" />
-          <NavigationProperty Name="Producto" Relationship="Self.FK_Stock_Producto" FromRole="Stock" ToRole="Producto" />
         </EntityType>
         <EntityType Name="TipoTarjeta">
           <Key>
@@ -672,13 +669,10 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <Property Name="Telefono" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Correo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="Contrasenna" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="IdRol" Type="Int32" />
           <NavigationProperty Name="Direccion" Relationship="Self.FK_Direccion_Usuario" FromRole="Usuario" ToRole="Direccion" />
           <NavigationProperty Name="EncabezadoCompra" Relationship="Self.FK_EncabezadoCompra_Usuario" FromRole="Usuario" ToRole="EncabezadoCompra" />
-          <NavigationProperty Name="Evaluacion" Relationship="Self.FK_Evaluacion_Usuario" FromRole="Usuario" ToRole="Evaluacion" />
           <NavigationProperty Name="MetodoPago" Relationship="Self.FK_MetodoPago_Usuario" FromRole="Usuario" ToRole="MetodoPago" />
           <NavigationProperty Name="Producto" Relationship="Self.FK_Producto_Usuario" FromRole="Usuario" ToRole="Producto" />
-          <NavigationProperty Name="Rol" Relationship="Self.FK_Usuario_Rol" FromRole="Usuario" ToRole="Rol" />
         </EntityType>
         <Association Name="FK_DetalleCompra_EncabezadoCompra">
           <End Role="EncabezadoCompra" Type="Self.EncabezadoCompra" Multiplicity="0..1" />
@@ -689,6 +683,18 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             </Principal>
             <Dependent Role="DetalleCompra">
               <PropertyRef Name="IdCompra" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_DetalleCompra_EstadoEntrega">
+          <End Role="EstadoEntrega" Type="Self.EstadoEntrega" Multiplicity="0..1" />
+          <End Role="DetalleCompra" Type="Self.DetalleCompra" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EstadoEntrega">
+              <PropertyRef Name="IdEstado" />
+            </Principal>
+            <Dependent Role="DetalleCompra">
+              <PropertyRef Name="IdEstado" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -764,6 +770,18 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Evaluacion_EncabezadoCompra">
+          <End Role="EncabezadoCompra" Type="Self.EncabezadoCompra" Multiplicity="0..1" />
+          <End Role="Evaluacion" Type="Self.Evaluacion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EncabezadoCompra">
+              <PropertyRef Name="IdCompra" />
+            </Principal>
+            <Dependent Role="Evaluacion">
+              <PropertyRef Name="IdCompra" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Producto_EstadoProducto">
           <End Role="EstadoProducto" Type="Self.EstadoProducto" Multiplicity="0..1" />
           <End Role="Producto" Type="Self.Producto" Multiplicity="*" />
@@ -773,18 +791,6 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             </Principal>
             <Dependent Role="Producto">
               <PropertyRef Name="IdEstado" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Evaluacion_Usuario">
-          <End Role="Usuario" Type="Self.Usuario" Multiplicity="0..1" />
-          <End Role="Evaluacion" Type="Self.Evaluacion" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Usuario">
-              <PropertyRef Name="IdUsuario" />
-            </Principal>
-            <Dependent Role="Evaluacion">
-              <PropertyRef Name="IdUsuario" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -860,30 +866,6 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Stock_Producto">
-          <End Role="Producto" Type="Self.Producto" Multiplicity="0..1" />
-          <End Role="Stock" Type="Self.Stock" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Producto">
-              <PropertyRef Name="IdProducto" />
-            </Principal>
-            <Dependent Role="Stock">
-              <PropertyRef Name="IdProducto" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Usuario_Rol">
-          <End Role="Rol" Type="Self.Rol" Multiplicity="0..1" />
-          <End Role="Usuario" Type="Self.Usuario" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Rol">
-              <PropertyRef Name="IdRol" />
-            </Principal>
-            <Dependent Role="Usuario">
-              <PropertyRef Name="IdRol" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="CategoriaProducto">
           <End Role="Categoria" Type="Self.Categoria" Multiplicity="*" />
           <End Role="Producto" Type="Self.Producto" Multiplicity="*" />
@@ -894,6 +876,7 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <EntitySet Name="Direccion" EntityType="Self.Direccion" />
           <EntitySet Name="EncabezadoCompra" EntityType="Self.EncabezadoCompra" />
           <EntitySet Name="EstadoCompra" EntityType="Self.EstadoCompra" />
+          <EntitySet Name="EstadoEntrega" EntityType="Self.EstadoEntrega" />
           <EntitySet Name="EstadoProducto" EntityType="Self.EstadoProducto" />
           <EntitySet Name="Evaluacion" EntityType="Self.Evaluacion" />
           <EntitySet Name="ImagenProducto" EntityType="Self.ImagenProducto" />
@@ -902,11 +885,14 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <EntitySet Name="Producto" EntityType="Self.Producto" />
           <EntitySet Name="Respuesta" EntityType="Self.Respuesta" />
           <EntitySet Name="Rol" EntityType="Self.Rol" />
-          <EntitySet Name="Stock" EntityType="Self.Stock" />
           <EntitySet Name="TipoTarjeta" EntityType="Self.TipoTarjeta" />
           <EntitySet Name="Usuario" EntityType="Self.Usuario" />
           <AssociationSet Name="FK_DetalleCompra_EncabezadoCompra" Association="Self.FK_DetalleCompra_EncabezadoCompra">
             <End Role="EncabezadoCompra" EntitySet="EncabezadoCompra" />
+            <End Role="DetalleCompra" EntitySet="DetalleCompra" />
+          </AssociationSet>
+          <AssociationSet Name="FK_DetalleCompra_EstadoEntrega" Association="Self.FK_DetalleCompra_EstadoEntrega">
+            <End Role="EstadoEntrega" EntitySet="EstadoEntrega" />
             <End Role="DetalleCompra" EntitySet="DetalleCompra" />
           </AssociationSet>
           <AssociationSet Name="FK_DetalleCompra_Producto" Association="Self.FK_DetalleCompra_Producto">
@@ -933,13 +919,13 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             <End Role="Usuario" EntitySet="Usuario" />
             <End Role="EncabezadoCompra" EntitySet="EncabezadoCompra" />
           </AssociationSet>
+          <AssociationSet Name="FK_Evaluacion_EncabezadoCompra" Association="Self.FK_Evaluacion_EncabezadoCompra">
+            <End Role="EncabezadoCompra" EntitySet="EncabezadoCompra" />
+            <End Role="Evaluacion" EntitySet="Evaluacion" />
+          </AssociationSet>
           <AssociationSet Name="FK_Producto_EstadoProducto" Association="Self.FK_Producto_EstadoProducto">
             <End Role="EstadoProducto" EntitySet="EstadoProducto" />
             <End Role="Producto" EntitySet="Producto" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Evaluacion_Usuario" Association="Self.FK_Evaluacion_Usuario">
-            <End Role="Usuario" EntitySet="Usuario" />
-            <End Role="Evaluacion" EntitySet="Evaluacion" />
           </AssociationSet>
           <AssociationSet Name="FK_ImagenProducto_Producto" Association="Self.FK_ImagenProducto_Producto">
             <End Role="Producto" EntitySet="Producto" />
@@ -964,14 +950,6 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
           <AssociationSet Name="FK_Producto_Usuario" Association="Self.FK_Producto_Usuario">
             <End Role="Usuario" EntitySet="Usuario" />
             <End Role="Producto" EntitySet="Producto" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Stock_Producto" Association="Self.FK_Stock_Producto">
-            <End Role="Producto" EntitySet="Producto" />
-            <End Role="Stock" EntitySet="Stock" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Usuario_Rol" Association="Self.FK_Usuario_Rol">
-            <End Role="Rol" EntitySet="Rol" />
-            <End Role="Usuario" EntitySet="Usuario" />
           </AssociationSet>
           <AssociationSet Name="CategoriaProducto" Association="Self.CategoriaProducto">
             <End Role="Categoria" EntitySet="Categoria" />
@@ -999,6 +977,7 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
                 <ScalarProperty Name="IdProducto" ColumnName="IdProducto" />
                 <ScalarProperty Name="Cantidad" ColumnName="Cantidad" />
                 <ScalarProperty Name="IdCompra" ColumnName="IdCompra" />
+                <ScalarProperty Name="IdEstado" ColumnName="IdEstado" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1039,6 +1018,14 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="EstadoEntrega">
+            <EntityTypeMapping TypeName="HappyKidsModel.EstadoEntrega">
+              <MappingFragment StoreEntitySet="EstadoEntrega">
+                <ScalarProperty Name="IdEstado" ColumnName="IdEstado" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="EstadoProducto">
             <EntityTypeMapping TypeName="HappyKidsModel.EstadoProducto">
               <MappingFragment StoreEntitySet="EstadoProducto">
@@ -1051,8 +1038,8 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
             <EntityTypeMapping TypeName="HappyKidsModel.Evaluacion">
               <MappingFragment StoreEntitySet="Evaluacion">
                 <ScalarProperty Name="IdEvaluacion" ColumnName="IdEvaluacion" />
-                <ScalarProperty Name="IdUsuario" ColumnName="IdUsuario" />
-                <ScalarProperty Name="Evaluacion1" ColumnName="Evaluacion" />
+                <ScalarProperty Name="IdCompra" ColumnName="IdCompra" />
+                <ScalarProperty Name="Puntuacion" ColumnName="Puntuacion" />
                 <ScalarProperty Name="Comentario" ColumnName="Comentario" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -1096,6 +1083,7 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
                 <ScalarProperty Name="IdEstado" ColumnName="IdEstado" />
                 <ScalarProperty Name="IdVendedor" ColumnName="IdVendedor" />
                 <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="Cantidad" ColumnName="Cantidad" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1113,15 +1101,6 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
               <MappingFragment StoreEntitySet="Rol">
                 <ScalarProperty Name="IdRol" ColumnName="IdRol" />
                 <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Stock">
-            <EntityTypeMapping TypeName="HappyKidsModel.Stock">
-              <MappingFragment StoreEntitySet="Stock">
-                <ScalarProperty Name="IdStock" ColumnName="IdStock" />
-                <ScalarProperty Name="IdProducto" ColumnName="IdProducto" />
-                <ScalarProperty Name="Cantidad" ColumnName="Cantidad" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1144,7 +1123,6 @@ warning 6002: The table/view 'HappyKids.dbo.CategoriaProducto' does not have a p
                 <ScalarProperty Name="Telefono" ColumnName="Telefono" />
                 <ScalarProperty Name="Correo" ColumnName="Correo" />
                 <ScalarProperty Name="Contrasenna" ColumnName="Contrasenna" />
-                <ScalarProperty Name="IdRol" ColumnName="IdRol" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -11,21 +11,19 @@ namespace Infraestructure.Models
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-
-    [MetadataType(typeof(EstadoProductoMetadata))]
-    public partial class EstadoProducto
+    
+    public partial class EstadoEntrega
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public EstadoProducto()
+        public EstadoEntrega()
         {
-            this.Producto = new HashSet<Producto>();
+            this.DetalleCompra = new HashSet<DetalleCompra>();
         }
     
         public int IdEstado { get; set; }
         public string Descripcion { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Producto> Producto { get; set; }
+        public virtual ICollection<DetalleCompra> DetalleCompra { get; set; }
     }
 }

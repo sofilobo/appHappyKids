@@ -19,7 +19,6 @@ namespace Infraestructure.Models
         {
             this.Direccion = new HashSet<Direccion>();
             this.EncabezadoCompra = new HashSet<EncabezadoCompra>();
-            this.Evaluacion = new HashSet<Evaluacion>();
             this.MetodoPago = new HashSet<MetodoPago>();
             this.Producto = new HashSet<Producto>();
         }
@@ -32,18 +31,14 @@ namespace Infraestructure.Models
         public string Telefono { get; set; }
         public string Correo { get; set; }
         public string Contrasenna { get; set; }
-        public Nullable<int> IdRol { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Direccion> Direccion { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EncabezadoCompra> EncabezadoCompra { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Evaluacion> Evaluacion { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MetodoPago> MetodoPago { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Producto> Producto { get; set; }
-        public virtual Rol Rol { get; set; }
     }
 }

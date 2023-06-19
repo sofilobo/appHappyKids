@@ -30,6 +30,7 @@ namespace Infraestructure.Models
         public virtual DbSet<Direccion> Direccion { get; set; }
         public virtual DbSet<EncabezadoCompra> EncabezadoCompra { get; set; }
         public virtual DbSet<EstadoCompra> EstadoCompra { get; set; }
+        public virtual DbSet<EstadoEntrega> EstadoEntrega { get; set; }
         public virtual DbSet<EstadoProducto> EstadoProducto { get; set; }
         public virtual DbSet<Evaluacion> Evaluacion { get; set; }
         public virtual DbSet<ImagenProducto> ImagenProducto { get; set; }
@@ -38,7 +39,6 @@ namespace Infraestructure.Models
         public virtual DbSet<Producto> Producto { get; set; }
         public virtual DbSet<Respuesta> Respuesta { get; set; }
         public virtual DbSet<Rol> Rol { get; set; }
-        public virtual DbSet<Stock> Stock { get; set; }
         public virtual DbSet<TipoTarjeta> TipoTarjeta { get; set; }
         public virtual DbSet<Usuario> Usuario { get; set; }
     }

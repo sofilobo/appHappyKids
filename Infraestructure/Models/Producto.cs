@@ -11,7 +11,9 @@ namespace Infraestructure.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+
+    [MetadataType(typeof(ProductoMetadata))]
     public partial class Producto
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -20,7 +22,6 @@ namespace Infraestructure.Models
             this.DetalleCompra = new HashSet<DetalleCompra>();
             this.ImagenProducto = new HashSet<ImagenProducto>();
             this.Pregunta = new HashSet<Pregunta>();
-            this.Stock = new HashSet<Stock>();
             this.Categoria = new HashSet<Categoria>();
         }
     
@@ -30,6 +31,7 @@ namespace Infraestructure.Models
         public Nullable<int> IdEstado { get; set; }
         public Nullable<int> IdVendedor { get; set; }
         public string Descripcion { get; set; }
+        public Nullable<int> Cantidad { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<DetalleCompra> DetalleCompra { get; set; }
@@ -39,8 +41,6 @@ namespace Infraestructure.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Pregunta> Pregunta { get; set; }
         public virtual Usuario Usuario { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Stock> Stock { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Categoria> Categoria { get; set; }
     }

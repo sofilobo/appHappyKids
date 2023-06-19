@@ -11,5 +11,8 @@ namespace Application_Core.Services
     {
         IEnumerable<Producto> GetProducts();
         Producto GetProductoByID(int id);
+        IEnumerable<Producto> GetByVendedor(int idVendedor);
+
+        //IEnumerable<Producto> GetProductoByEstado(int id);
     }
 }

@@ -73,6 +73,9 @@
     <Compile Include="Models\EstadoCompra.cs">
       <DependentUpon>MyModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\EstadoEntrega.cs">
+      <DependentUpon>MyModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\EstadoProducto.cs">
       <DependentUpon>MyModel.tt</DependentUpon>
     </Compile>
@@ -82,6 +85,7 @@
     <Compile Include="Models\ImagenProducto.cs">
       <DependentUpon>MyModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Metadata.cs" />
     <Compile Include="Models\MetodoPago.cs">
       <DependentUpon>MyModel.tt</DependentUpon>
     </Compile>
@@ -113,9 +117,6 @@
     <Compile Include="Models\Rol.cs">
       <DependentUpon>MyModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Stock.cs">
-      <DependentUpon>MyModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\TipoTarjeta.cs">
       <DependentUpon>MyModel.tt</DependentUpon>
     </Compile>
@@ -123,7 +124,9 @@
       <DependentUpon>MyModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\IRepositoryEstadoProducto.cs" />
     <Compile Include="Repository\IRepositoryProducto.cs" />
+    <Compile Include="Repository\RepositoryEstadoProducto.cs" />
     <Compile Include="Repository\RepositoryProducto.cs" />
     <Compile Include="Utils\Log.cs" />
   </ItemGroup>
@@ -138,7 +141,9 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Models\MyModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -150,9 +155,6 @@
       <DependentUpon>MyModel.edmx</DependentUpon>
       <LastGenOutput>MyModel.cs</LastGenOutput>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

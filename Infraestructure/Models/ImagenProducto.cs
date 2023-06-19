@@ -16,7 +16,7 @@ namespace Infraestructure.Models
     {
         public int IdImagen { get; set; }
         public Nullable<int> IdProducto { get; set; }
-        public Nullable<bool> Imagen { get; set; }
+        public byte[] Imagen { get; set; }
     
         public virtual Producto Producto { get; set; }
     }
